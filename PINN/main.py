@@ -1,17 +1,16 @@
 import os
-
+import matplotlib.pyplot as plt
 import torch
-
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
 from libs import *
 from train import *
 from net import *
 from equation import *
 from data import *
+
 layers = [2, 20, 20, 20, 20, 20, 20, 20, 20, 1]
 lr = 0.001
-N_f = 4000
+N_f = 10000
 N_u = 200
 
 data = scipy.io.loadmat('burgers_shock.mat')
@@ -41,50 +40,71 @@ idx = np.random.choice(X_u_train.shape[0], N_u, replace=False)
 X_u_train = X_u_train[idx, :]
 u_train = u_train[idx,:]
 
-epoch = 50
-LBFGS_error = []
-net = Net(2, 20, 8, lb, ub)
-net.apply(weight_init)
-equation = Burgers(net)
-optimizer = optim.LBFGS(net.parameters(),line_search_fn='strong_wolfe')
-start = time.time()
-for e in range(epoch):
-    def closure():
-        optimizer.zero_grad()
-        loss = equation.loss1(X_f_train, X_u_train, u_train)
-        loss.backward()
-        return loss
-    optimizer.step(closure)
-    loss = closure()
-    end = time.time() - start
-    lr = optimizer.state_dict()['param_groups'][0]['lr']
-    print("Epoch {} - lr {} -  loss: {} - time:{}".format(e, lr, loss, end))
-    LBFGS_error.append(loss.item())
-
-#save the model
-#plt.plot(LBFGS_error)
-#plt.show()
-np.savetxt('LBFGS_training_error.csv', LBFGS_error)
-torch.save(net, 'LBFGS_net_model.pkl')
-
-epoch2 = 2000
-Adam_error = []
+# epoch2 = 3000
+# Adam_error = []
 # net = Net(2, 20, 8, lb, ub)
 # net.apply(weight_init)
 # equation = Burgers(net)
-scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1000)
-optimizer = optim.Adam(net.parameters(),0.001)
-start_time = time.time()
-for e in range(epoch2):
+# optimizer = optim.Adam(net.parameters(),0.001)
+# scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1000)
+# start_time = time.time()
+# for e in range(epoch2):
+#     optimizer.zero_grad()
+#     loss = equation.loss1(X_f_train, X_u_train, u_train)
+#     loss.backward()
+#     optimizer.step()
+#     end = time.time() - start_time
+#     lr = optimizer.state_dict()['param_groups'][0]['lr']
+#     print("Epoch {} - lr {} -  loss: {} - time:{}".format(e, lr, loss, end))
+#     Adam_error.append(loss.item())
+# #save the model
+# plt.plot(Adam_error)
+# plt.xlabel('epoch')
+# plt.ylabel('error')
+# plt.title('traing error')
+# plt.savefig('figures/Adam_training_error.pdf')
+# plt.show()
+# np.savetxt('tables/Adam_training_error.csv', Adam_error)
+# torch.save(net, 'model/Adam_net_model.pkl')
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print(device)
+LBFGS_error = []
+net = Net(2, 20, 8, lb, ub)
+net.apply(weight_init)
+net.to(device)
+equation = Burgers(net)
+optimizer = optim.LBFGS(net.parameters(),lr=1.0,
+            max_iter=50000,
+            max_eval=50000,
+            history_size=50,
+            tolerance_grad=1e-5,
+            tolerance_change=1.0 * np.finfo(float).eps,
+            line_search_fn="strong_wolfe" ) # can be "strong_wolfe")
+start = time.time()
+net.train()
+def closure():
     optimizer.zero_grad()
     loss = equation.loss1(X_f_train, X_u_train, u_train)
     loss.backward()
-    optimizer.step()
-    end = time.time() - start
-    lr = optimizer.state_dict()['param_groups'][0]['lr']
-    print("Epoch {} - lr {} -  loss: {} - time:{}".format(e, lr, loss, end))
-    Adam_error.append(loss.item())
+    print('Loss: %.5e' % (loss.item()))
+    LBFGS_error.append(loss.item())
+    return loss
+optimizer.step(closure)
+end = time.time() - start
+print("time:{}".format(end))
 
+#save the model
+plt.plot(LBFGS_error)
+plt.xlabel('epoch')
+plt.ylabel('error')
+plt.title('traing error')
+plt.savefig('figures/LBFGS_training_error.pdf')
+plt.show()
+np.savetxt('tables/LBFGS_training_error.csv', LBFGS_error)
+torch.save(net, 'model/LBFGS_net_model.pkl')
+
+#test
 input = torch.Tensor(X_star)
 output = torch.Tensor(u_star)
 test_data = GetLoader(input, output)

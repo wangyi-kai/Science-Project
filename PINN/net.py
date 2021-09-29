@@ -22,10 +22,8 @@ class Net(nn.Module):
         for i, li in enumerate(self.hidden_layer):
             x = li(x)
             #x = self.batch_norm(x)
-            #x = torch.tanh(x)
             x = self.act(x)
         x = self.output_layer(x)
-        #x = self.fc(x)
         return x
 
 class Linear(nn.Module):

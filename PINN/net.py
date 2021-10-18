@@ -9,19 +9,16 @@ class Net(nn.Module):
         self.input_layer = nn.Linear(input, width)
         self.hidden_layer = nn.ModuleList(nn.Linear(width, width) for i in range(length))
         self.output_layer = nn.Linear(width, 1)
-        self.batch_norm1 = nn.BatchNorm1d(2)
-        self.batch_norm = nn.BatchNorm1d(width)
         self.act = nn.Tanh()
-        self.lb = torch.Tensor(lb)
-        self.ub = torch.Tensor(ub)
+        self.lb = torch.tensor(lb)
+        self.ub = torch.tensor(ub)
 
     def forward(self, x):
         x = 2.0 * (x - self.lb) / (self.ub - self.lb) - 1.0
         x = self.input_layer(x)
-        x = torch.tanh(x)
+        x = self.act(x)
         for i, li in enumerate(self.hidden_layer):
             x = li(x)
-            #x = self.batch_norm(x)
             x = self.act(x)
         x = self.output_layer(x)
         return x

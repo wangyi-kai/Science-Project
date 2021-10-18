@@ -94,13 +94,13 @@ class Burgers():
         return loss
 
     def loss1(self, x_f, x_u, u):
-        x_f = torch.Tensor(x_f)
-        x_u = torch.Tensor(x_u)
-        u = torch.Tensor(u)
-        xf = x_f[:, 0:1]
-        tf = x_f[:, 1:2]
+        u = torch.tensor(u)
+        xf = torch.tensor(x_f[:, 0:1], requires_grad=True)
+        tf = torch.tensor(x_f[:, 1:2], requires_grad=True)
+        xu = torch.tensor(x_u[:, 0:1], requires_grad=True)
+        tu = torch.tensor(x_u[:, 1:2], requires_grad=True)
         f = self.f(xf, tf)
-        b_error = self.net(x_u) - u
+        b_error = self.net_u(xu, tu) - u
         loss = torch.mean(torch.square(f)) + torch.mean(torch.square(b_error))
         return loss
 

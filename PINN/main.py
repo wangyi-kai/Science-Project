@@ -12,6 +12,7 @@ layers = [2, 20, 20, 20, 20, 20, 20, 20, 20, 1]
 lr = 0.001
 N_f = 10000
 N_u = 200
+nu = 0.01 / np.pi
 
 data = scipy.io.loadmat('burgers_shock.mat')
 t = data['t'].flatten()[:, None]
@@ -73,7 +74,7 @@ LBFGS_error = []
 net = Net(2, 20, 8, lb, ub)
 net.apply(weight_init)
 net.to(device)
-equation = Burgers(net)
+equation = Burgers(net, nu)
 optimizer = optim.LBFGS(net.parameters(),lr=1.0,
             max_iter=50000,
             max_eval=50000,
@@ -95,14 +96,14 @@ end = time.time() - start
 print("time:{}".format(end))
 
 #save the model
-plt.plot(LBFGS_error)
-plt.xlabel('epoch')
-plt.ylabel('error')
-plt.title('traing error')
-plt.savefig('figures/LBFGS_training_error.pdf')
-plt.show()
-np.savetxt('tables/LBFGS_training_error.csv', LBFGS_error)
-torch.save(net, 'model/LBFGS_net_model.pkl')
+# plt.plot(LBFGS_error)
+# plt.xlabel('epoch')
+# plt.ylabel('error')
+# plt.title('traing error')
+# plt.savefig('figures/LBFGS_training_error.pdf')
+# plt.show()
+# np.savetxt('tables/LBFGS_training_error.csv', LBFGS_error)
+# torch.save(net, 'model/LBFGS_net_model.pkl')
 
 #test
 input = torch.Tensor(X_star)

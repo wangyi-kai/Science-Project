@@ -185,14 +185,14 @@ if __name__ == "__main__":
     noise = 0.0
 
     N_u = 200
-    N_f = 10000
+    N_f = 4000
     layers = [2, 20, 20, 20, 20, 20, 20, 20, 20, 1]
 
-    data = scipy.io.loadmat('burgers_shock.mat')
-
+    data = scipy.io.loadmat('FenicsProject/Burgers.mat')
+    #data = scipy.io.loadmat('burgers_shock.mat')
     t = data['t'].flatten()[:, None]
     x = data['x'].flatten()[:, None]
-    Exact = np.real(data['usol']).T
+    Exact = np.real(data['usol'])
 
     X, T = np.meshgrid(x, t)
 

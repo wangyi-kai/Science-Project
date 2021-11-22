@@ -1,20 +1,23 @@
 from __future__ import print_function
+
+import scipy.io
 from fenics import *
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.io as iso
-
+from mpl_toolkits import mplot3d
 from dolfin import *
 
 T = 1.0
-num_steps = 10
+num_steps = 100
 dt = T / num_steps
 
-nx = 4
+nx = 255
 pi = 3.14159
 nu = 0.01 / pi
 x_left = -1.0
 x_right = 1.0
+dis = (x_right - x_left) / nx
 mesh = IntervalMesh(nx, x_left, x_right)
 V = FunctionSpace(mesh, 'P', 1)
 
@@ -50,55 +53,47 @@ F = \
   + inner ( u * u.dx(0), v ) \
   - dot ( f, v ) \
   ) * dx
-#a, L = lhs(F), rhs(F)
+
 J = derivative(F, u)
 
 t = 0
-# k = 0
-# t_plot = 0.0
-# t_final = 1.0
-# while (True):
-#     if (k % 10 == 0):
-#       plot ( u, title = ( 'burgers time viscous %g' % ( t ) ) )
-#       plt.grid ( True )
-#       plt.show()
-#       filename = ( 'burgers_time_viscous_%d.png' % ( k ) )
-#       plt.savefig ( filename )
-#       print ( 'Graphics saved as "%s"' % ( filename ) )
-#       plt.close ( )
-#       t_plot = t_plot + 0.1
-#
-#     if ( t_final <= t ):
-#       print ( '' )
-#       print ( 'Reached final time.' )
-#       break
-#
-#     k += 1
-#     t += dt
-#     solve ( F == 0, u, bc, J = J)
-#     print(t)
-#     vertex_values_u = u.compute_vertex_values()
-#     print(vertex_values_u)
-#     u_n.assign(u)
 u_true = []
+u_d = []
 t_true = []
 x_true = []
+
 for n in range(num_steps):
-    for i in range(nx):
-        t_true.append(t)
-    #u_D.t = t
+    # for i in range(nx + 1):
+    #     t_true.append(t)
+    t_true.append(t)
+
     solve(F == 0, u, bc, J = J)
-    #plot(u)
     t += dt
-    #print(mesh)
     vertex_values_u = u.compute_vertex_values()
-    u_true.append(vertex_values_u.squeeze())
+    u_true.append(vertex_values_u)
+    # for i in range(len(vertex_values_u)):
+    #     u_true.append(vertex_values_u[i])
     u_n.assign(u)
-#plot(mesh)
-print(t_true)
-plt.show()
-#print(u_true)
-np.savetxt('generate_data.csv', u_true)
+x_mesh = x_left
+for i in range(nx + 1):
+    x_true.append(x_mesh)
+    x_mesh = x_mesh + dis
+# fig = plt.figure()
+# ax = plt.axes(projection='3d')
+# ax.plot3D(t_true, x_true, u_true)
+# ax.set_xlabel('t')
+# ax.set_ylabel('x')
+# ax.set_zlabel('u')
+# ax.set_title('Burgers Equation')
+# plt.show()
+scipy.io.savemat('Burgers.mat', {'t' : t_true, 'x' : x_true, 'usol' : u_true})
+# print(t_true)
+# print(x_true)
+# print(u_true)
+# print(len(t_true))
+# print(len(x_true))
+# print(len(u_true))
+#np.savetxt('FenicsProject/generate_data.csv', u_true)
 
 
 

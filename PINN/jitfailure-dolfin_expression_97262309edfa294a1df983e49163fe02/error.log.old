@@ -1,0 +1,75 @@
+/tmp/tmpff71a84s/dolfin_expression_97262309edfa294a1df983e49163fe02.cpp: In member function ‘virtual void dolfin::dolfin_expression_97262309edfa294a1df983e49163fe02::eval(Eigen::Ref<Eigen::Matrix<double, -1, 1> >, Eigen::Ref<const Eigen::Matrix<double, -1, 1> >) const’:
+/tmp/tmpff71a84s/dolfin_expression_97262309edfa294a1df983e49163fe02.cpp:61:34: error: no matching function for call to ‘sin(Eigen::internal::enable_if<true, const Eigen::CwiseBinaryOp<Eigen::internal::scalar_product_op<double, double>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, const Eigen::Matrix<double, -1, 1> >, const Eigen::Ref<const Eigen::Matrix<double, -1, 1> > > >::type)’
+   61 |           values[0] = -sin(pi * x);
+      |                                  ^
+In file included from /usr/include/features.h:461,
+                 from /usr/include/x86_64-linux-gnu/c++/9/bits/os_defines.h:39,
+                 from /usr/include/x86_64-linux-gnu/c++/9/bits/c++config.h:524,
+                 from /usr/include/c++/9/bits/stl_algobase.h:59,
+                 from /usr/include/c++/9/vector:60,
+                 from /home/wangyikai/anaconda3/envs/myenv/include/dolfin/function/Expression.h:24,
+                 from /tmp/tmpff71a84s/dolfin_expression_97262309edfa294a1df983e49163fe02.cpp:13:
+/usr/include/x86_64-linux-gnu/bits/mathcalls.h:64:1: note: candidate: ‘double sin(double)’
+   64 | __MATHCALL_VEC (sin,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+In file included from /usr/include/c++/9/cmath:45,
+                 from /home/wangyikai/anaconda3/envs/myenv/include/ufc_geometry.h:9,
+                 from /home/wangyikai/anaconda3/envs/myenv/include/ufc.h:22,
+                 from /home/wangyikai/anaconda3/envs/myenv/include/dolfin/function/Expression.h:25,
+                 from /tmp/tmpff71a84s/dolfin_expression_97262309edfa294a1df983e49163fe02.cpp:13:
+/usr/include/x86_64-linux-gnu/bits/mathcalls.h:64:1: note:   no known conversion for argument 1 from ‘Eigen::internal::enable_if<true, const Eigen::CwiseBinaryOp<Eigen::internal::scalar_product_op<double, double>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, const Eigen::Matrix<double, -1, 1> >, const Eigen::Ref<const Eigen::Matrix<double, -1, 1> > > >::type’ {aka ‘const Eigen::CwiseBinaryOp<Eigen::internal::scalar_product_op<double, double>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, const Eigen::Matrix<double, -1, 1> >, const Eigen::Ref<const Eigen::Matrix<double, -1, 1> > >’} to ‘double’
+   64 | __MATHCALL_VEC (sin,, (_Mdouble_ __x));
+      | ^
+In file included from /home/wangyikai/anaconda3/envs/myenv/include/eigen3/Eigen/Core:96,
+                 from /home/wangyikai/anaconda3/envs/myenv/include/eigen3/Eigen/Dense:1,
+                 from /home/wangyikai/anaconda3/envs/myenv/include/dolfin/function/Expression.h:26,
+                 from /tmp/tmpff71a84s/dolfin_expression_97262309edfa294a1df983e49163fe02.cpp:13:
+/usr/include/c++/9/complex:852:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::sin(const std::complex<_Tp>&)’
+  852 |     sin(const complex<_Tp>& __z) { return __complex_sin(__z.__rep()); }
+      |     ^~~
+/usr/include/c++/9/complex:852:5: note:   template argument deduction/substitution failed:
+/tmp/tmpff71a84s/dolfin_expression_97262309edfa294a1df983e49163fe02.cpp:61:34: note:   ‘Eigen::internal::enable_if<true, const Eigen::CwiseBinaryOp<Eigen::internal::scalar_product_op<double, double>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, const Eigen::Matrix<double, -1, 1> >, const Eigen::Ref<const Eigen::Matrix<double, -1, 1> > > >::type’ {aka ‘const Eigen::CwiseBinaryOp<Eigen::internal::scalar_product_op<double, double>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, const Eigen::Matrix<double, -1, 1> >, const Eigen::Ref<const Eigen::Matrix<double, -1, 1> > >’} is not derived from ‘const std::complex<_Tp>’
+   61 |           values[0] = -sin(pi * x);
+      |                                  ^
+In file included from /home/wangyikai/anaconda3/envs/myenv/include/ufc_geometry.h:9,
+                 from /home/wangyikai/anaconda3/envs/myenv/include/ufc.h:22,
+                 from /home/wangyikai/anaconda3/envs/myenv/include/dolfin/function/Expression.h:25,
+                 from /tmp/tmpff71a84s/dolfin_expression_97262309edfa294a1df983e49163fe02.cpp:13:
+/usr/include/c++/9/cmath:437:5: note: candidate: ‘template<class _Tp> constexpr typename __gnu_cxx::__enable_if<std::__is_integer<_Tp>::__value, double>::__type std::sin(_Tp)’
+  437 |     sin(_Tp __x)
+      |     ^~~
+/usr/include/c++/9/cmath:437:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/9/cmath: In substitution of ‘template<class _Tp> constexpr typename __gnu_cxx::__enable_if<std::__is_integer<_Tp>::__value, double>::__type std::sin(_Tp) [with _Tp = Eigen::CwiseBinaryOp<Eigen::internal::scalar_product_op<double, double>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, const Eigen::Matrix<double, -1, 1> >, const Eigen::Ref<const Eigen::Matrix<double, -1, 1> > >]’:
+/tmp/tmpff71a84s/dolfin_expression_97262309edfa294a1df983e49163fe02.cpp:61:34:   required from here
+/usr/include/c++/9/cmath:437:5: error: no type named ‘__type’ in ‘struct __gnu_cxx::__enable_if<false, double>’
+/usr/include/c++/9/cmath:429:3: note: candidate: ‘constexpr long double std::sin(long double)’
+  429 |   sin(long double __x)
+      |   ^~~
+/usr/include/c++/9/cmath:429:19: note:   no known conversion for argument 1 from ‘Eigen::internal::enable_if<true, const Eigen::CwiseBinaryOp<Eigen::internal::scalar_product_op<double, double>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, const Eigen::Matrix<double, -1, 1> >, const Eigen::Ref<const Eigen::Matrix<double, -1, 1> > > >::type’ {aka ‘const Eigen::CwiseBinaryOp<Eigen::internal::scalar_product_op<double, double>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, const Eigen::Matrix<double, -1, 1> >, const Eigen::Ref<const Eigen::Matrix<double, -1, 1> > >’} to ‘long double’
+  429 |   sin(long double __x)
+      |       ~~~~~~~~~~~~^~~
+/usr/include/c++/9/cmath:425:3: note: candidate: ‘constexpr float std::sin(float)’
+  425 |   sin(float __x)
+      |   ^~~
+/usr/include/c++/9/cmath:425:13: note:   no known conversion for argument 1 from ‘Eigen::internal::enable_if<true, const Eigen::CwiseBinaryOp<Eigen::internal::scalar_product_op<double, double>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, const Eigen::Matrix<double, -1, 1> >, const Eigen::Ref<const Eigen::Matrix<double, -1, 1> > > >::type’ {aka ‘const Eigen::CwiseBinaryOp<Eigen::internal::scalar_product_op<double, double>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, const Eigen::Matrix<double, -1, 1> >, const Eigen::Ref<const Eigen::Matrix<double, -1, 1> > >’} to ‘float’
+  425 |   sin(float __x)
+      |       ~~~~~~^~~
+In file included from /home/wangyikai/anaconda3/envs/myenv/include/eigen3/Eigen/Core:538,
+                 from /home/wangyikai/anaconda3/envs/myenv/include/eigen3/Eigen/Dense:1,
+                 from /home/wangyikai/anaconda3/envs/myenv/include/dolfin/function/Expression.h:26,
+                 from /tmp/tmpff71a84s/dolfin_expression_97262309edfa294a1df983e49163fe02.cpp:13:
+/home/wangyikai/anaconda3/envs/myenv/include/eigen3/Eigen/src/Core/GlobalFunctions.h:60:36: note: candidate: ‘template<class Derived> const Eigen::CwiseUnaryOp<Eigen::internal::scalar_sin_op<typename Derived::Scalar>, const Derived> Eigen::sin(const Eigen::ArrayBase<Derived>&)’
+   60 |   EIGEN_ARRAY_DECLARE_GLOBAL_UNARY(sin,scalar_sin_op,sine,\sa ArrayBase::sin)
+      |                                    ^~~
+/home/wangyikai/anaconda3/envs/myenv/include/eigen3/Eigen/src/Core/GlobalFunctions.h:32:4: note: in definition of macro ‘EIGEN_ARRAY_DECLARE_GLOBAL_UNARY’
+   32 |   (NAME)(const Eigen::ArrayBase<Derived>& x) { \
+      |    ^~~~
+/home/wangyikai/anaconda3/envs/myenv/include/eigen3/Eigen/src/Core/GlobalFunctions.h:60:36: note:   template argument deduction/substitution failed:
+   60 |   EIGEN_ARRAY_DECLARE_GLOBAL_UNARY(sin,scalar_sin_op,sine,\sa ArrayBase::sin)
+      |                                    ^~~
+/home/wangyikai/anaconda3/envs/myenv/include/eigen3/Eigen/src/Core/GlobalFunctions.h:32:4: note: in definition of macro ‘EIGEN_ARRAY_DECLARE_GLOBAL_UNARY’
+   32 |   (NAME)(const Eigen::ArrayBase<Derived>& x) { \
+      |    ^~~~
+/tmp/tmpff71a84s/dolfin_expression_97262309edfa294a1df983e49163fe02.cpp:61:34: note:   ‘Eigen::internal::enable_if<true, const Eigen::CwiseBinaryOp<Eigen::internal::scalar_product_op<double, double>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, const Eigen::Matrix<double, -1, 1> >, const Eigen::Ref<const Eigen::Matrix<double, -1, 1> > > >::type’ {aka ‘const Eigen::CwiseBinaryOp<Eigen::internal::scalar_product_op<double, double>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, const Eigen::Matrix<double, -1, 1> >, const Eigen::Ref<const Eigen::Matrix<double, -1, 1> > >’} is not derived from ‘const Eigen::ArrayBase<Derived>’
+   61 |           values[0] = -sin(pi * x);
+      |                                  ^

@@ -82,11 +82,15 @@ def weight_init(m):
         nn.init.xavier_normal_(m.weight)
         nn.init.constant_(m.bias, 0)
 
-# lb = [-1]
-# ub = [1]
-# layers = [2, 20, 20, 20, 20, 1]
-# net = Net(2, 2, 4, lb, ub)
-# print(net)
-# for i, para in enumerate(net.parameters()):
-#     print(i, para)
+lb = [-1]
+ub = [1]
+layers = [2, 20, 20, 20, 20, 1]
+net = Net(2, 2, 4, lb, ub)
+
+x = torch.rand(10, 2, requires_grad=True)
+y = net(x)
+dy = torch.autograd.grad(y, x, grad_outputs=torch.ones_like(y))[0]
+print(dy)
+print(dy[:,0])
+
 

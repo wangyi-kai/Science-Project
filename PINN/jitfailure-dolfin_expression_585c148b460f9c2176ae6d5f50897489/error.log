@@ -1,0 +1,5 @@
+/tmp/tmpdiwb2ess/dolfin_expression_585c148b460f9c2176ae6d5f50897489.cpp: In member function ‘virtual void dolfin::dolfin_expression_585c148b460f9c2176ae6d5f50897489::eval(Eigen::Ref<Eigen::Matrix<double, -1, 1> >, Eigen::Ref<const Eigen::Matrix<double, -1, 1> >) const’:
+/tmp/tmpdiwb2ess/dolfin_expression_585c148b460f9c2176ae6d5f50897489.cpp:62:51: error: expected ‘;’ before ‘)’ token
+   62 |           values[0] = x[0] * x[0] * cos(pi * x[0]));
+      |                                                   ^
+      |                                                   ;

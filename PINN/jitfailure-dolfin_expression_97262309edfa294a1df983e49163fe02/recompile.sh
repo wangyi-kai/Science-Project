@@ -1,0 +1,3 @@
+#!/bin/bash
+# Execute this file to recompile locally
+c++ -Wall -shared -fPIC -std=c++11 -O3 -fno-math-errno -fno-trapping-math -ffinite-math-only -I/home/wangyikai/anaconda3/envs/myenv/include -I/home/wangyikai/anaconda3/envs/myenv/include/eigen3 -I/home/wangyikai/anaconda3/envs/myenv/.cache/dijitso/include dolfin_expression_97262309edfa294a1df983e49163fe02.cpp -L/home/wangyikai/anaconda3/envs/myenv/lib -L/home/wangyikai/anaconda3/envs/myenv/home/wangyikai/anaconda3/envs/myenv/lib -L/home/wangyikai/anaconda3/envs/myenv/.cache/dijitso/lib -Wl,-rpath,/home/wangyikai/anaconda3/envs/myenv/.cache/dijitso/lib -lmpi -lmpicxx -lpetsc -lslepc -lhdf5 -lboost_timer -ldolfin -olibdijitso-dolfin_expression_97262309edfa294a1df983e49163fe02.so

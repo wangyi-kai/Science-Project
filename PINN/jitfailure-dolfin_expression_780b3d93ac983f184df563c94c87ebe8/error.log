@@ -1,0 +1,7 @@
+/tmp/tmp_1_z9t59/dolfin_expression_780b3d93ac983f184df563c94c87ebe8.cpp: In member function ‘virtual void dolfin::dolfin_expression_780b3d93ac983f184df563c94c87ebe8::eval(Eigen::Ref<Eigen::Matrix<double, -1, 1> >, Eigen::Ref<const Eigen::Matrix<double, -1, 1> >) const’:
+/tmp/tmp_1_z9t59/dolfin_expression_780b3d93ac983f184df563c94c87ebe8.cpp:61:32: error: expected primary-expression before ‘{’ token
+   61 |           values[0] = (1-x[0])+{1}*(1+x[0]))/2;
+      |                                ^
+/tmp/tmp_1_z9t59/dolfin_expression_780b3d93ac983f184df563c94c87ebe8.cpp:61:43: error: invalid type argument of unary ‘*’ (have ‘Eigen::DenseCoeffsBase<Eigen::Ref<const Eigen::Matrix<double, -1, 1> >, 0>::CoeffReturnType’ {aka ‘double’})
+   61 |           values[0] = (1-x[0])+{1}*(1+x[0]))/2;
+      |                                           ^

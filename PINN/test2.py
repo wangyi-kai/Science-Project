@@ -1,111 +1,121 @@
-from __future__ import print_function
-from fenics import *
-import matplotlib.pyplot as plt
-import numpy as np
-import scipy.io as iso
-
 from dolfin import *
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.io as iso
+# parameters
+#####################################
+nx = 512  # mesh points
+theta = 0.5  # time discretization
+T = 1
+time_step = 200
+#dt = 5.0e-3 # time step
+dt = T / time_step
+(x0, xf) = (-1.0, 1.0)  # boundaries
+order = 2  # mesh polynomial order
+dis = (xf - x0) / nx
+# Class for interfacing with the Newton solver
+class AllenCahnEquation(NonlinearProblem):
+    def __init__(self, a, L):
+        NonlinearProblem.__init__(self)
+        self.L = L
+        self.a = a
 
-T = 1.0
-num_steps = 10
-dt = T / num_steps
+    def F(self, b, x):
+        assemble(self.L, tensor=b)
 
-nx = 4
-pi = 3.14159
-nu = 0.01 / pi
-x_left = -1.0
-x_right = 1.0
-mesh = IntervalMesh(nx, x_left, x_right)
-V = FunctionSpace(mesh, 'P', 1)
+    def J(self, A, x):
+        assemble(self.a, tensor=A)
 
-#define the boundary conditions
-u_left = 0.0
-def on_left(x, on_boundary):
-    return (on_boundary and near(x[0], x_left))
-bc_left = DirichletBC(V, u_left, on_left)
+# Sub domain for Periodic boundary condition
+class PeriodicBoundary(SubDomain):
 
-u_right = 0.0
-def on_right ( x, on_boundary ):
-    return ( on_boundary and near ( x[0], x_right ) )
-bc_right = DirichletBC ( V, u_right, on_right )
-bc = [bc_left, bc_right]
+    # Left boundary is "target domain" G
+    def inside(self, x, on_boundary):
+        return near(x[0], x0) and on_boundary
 
-#define initial condition
-u_init = Expression("-1 * sin(pi * x[0])", degree=1, pi = pi)
-u_n = interpolate(u_init, V)
+    # Map right boundary (H) to left boundary (G)
+    def map(self, x, y):
+        y[0] = x[0] - (xf - x0)
 
-u = Function(V)
-u_x = u.dx(0)
-f = Constant(0)
+# formulate problem
+#####################################
+# create periodic boundary condition
+pbc = PeriodicBoundary()
+
+# setup mesh
+mesh = IntervalMesh(nx, x0, xf)
+V = FunctionSpace(mesh, "P", order, constrained_domain=pbc)
+
+# define test & trial functions
+du = TrialFunction(V)
 v = TestFunction(V)
-v_x = v.dx(0)
 
-dx = Measure("dx")
-n = FacetNormal ( mesh )
-#F = dot(u - u_n, v) * dx + dt * inner(u * u_x, v) * dx + dt * nu * inner(grad(u), grad(v)) * dx
-F = \
-  ( \
-    dot ( u - u_n, v ) / dt \
-  + nu * inner ( grad ( u ), grad ( v ) ) \
-  + inner ( u * u.dx(0), v ) \
-  - dot ( f, v ) \
-  ) * dx
-#a, L = lhs(F), rhs(F)
-J = derivative(F, u)
+# define functions
+u = Function(V)
+u0 = Function(V)
 
-t = 0
-# k = 0
-# t_plot = 0.0
-# t_final = 1.0
-# while (True):
-#     if (k % 10 == 0):
-#       plot ( u, title = ( 'burgers time viscous %g' % ( t ) ) )
-#       plt.grid ( True )
-#       plt.show()
-#       filename = ( 'burgers_time_viscous_%d.png' % ( k ) )
-#       plt.savefig ( filename )
-#       print ( 'Graphics saved as "%s"' % ( filename ) )
-#       plt.close ( )
-#       t_plot = t_plot + 0.1
-#
-#     if ( t_final <= t ):
-#       print ( '' )
-#       print ( 'Reached final time.' )
-#       break
-#
-#     k += 1
-#     t += dt
-#     solve ( F == 0, u, bc, J = J)
-#     print(t)
-#     vertex_values_u = u.compute_vertex_values()
-#     print(vertex_values_u)
-#     u_n.assign(u)
+# initial conditions
+u_init = Expression("pow(x[0],2)*cos(pi*x[0])", degree=2)
+u.interpolate(u_init)
+u0.interpolate(u_init)
+
+mu_mid = (1.0 - theta) * u0 + theta * u
+gamma1 = 0.0001
+gamma2 = 5.0  # {1 (easiest):4 (hardest)}
+
+F = u * v * dx - u0 * v * dx + \
+    dt * gamma1 * dot(grad(u), grad(v)) * dx + \
+    dt * gamma2 * (u ** 3 - u) * v * dx
+
+J = derivative(F, u, du)
+
+problem = AllenCahnEquation(J, F)
+solver = NewtonSolver()
+
+# map mesh vertices to solution DOFs
+#####################################
+dof_coordinates = V.tabulate_dof_coordinates()
+
+# get indicies of sorted result
+dofs = np.squeeze(dof_coordinates)
+asc_order = np.argsort(dofs)
+
+# time stepping
+#####################################
+(t, T) = (0.0, 1.0)
+
+plt.figure
+plt.title(f"Allen-Cahn: $\gamma_2={gamma2}$")
+plt.ylabel("$u(t)$")
+plt.xlabel("$x$")
+labels = []
+
 u_true = []
 t_true = []
 x_true = []
-for n in range(num_steps):
-    for i in range(nx):
-        t_true.append(t)
-    #u_D.t = t
-    solve(F == 0, u, bc, J = J)
-    #plot(u)
+for i in range(time_step + 1):
+    t_true.append(t)
+    # compute current solution
+    solver.solve(problem, u.vector())
+    ver = u.compute_vertex_values()
+    u_true.append(ver[:-1])
+    # update previous solution
+    u0.vector()[:] = u.vector()
+
+    # plot 6 solution snapshots
+    if round(t / dt) % round(T / dt / 6) == 0:
+        plt.plot(dofs[asc_order], u.vector()[asc_order])
+        labels.append(f"t = {t / T:.2f}")
+
+    # increment time
     t += dt
-    #print(mesh)
-    vertex_values_u = u.compute_vertex_values()
-    u_true.append(vertex_values_u.squeeze())
-    u_n.assign(u)
-#plot(mesh)
-print(t_true)
+    #n += 1
+plot(mesh)
+plt.legend(labels)
 plt.show()
-#print(u_true)
-np.savetxt('generate_data.csv', u_true)
+x_ = x0
+for i in range(nx):
+    x_true.append(x_)
+    x_ += dis
 
-
-
-
-
-
-
-
-
-
+iso.savemat('FenicsProject/Allen-Cahn.mat', {'x' : x_true, 't' : t_true, 'usol' : u_true})

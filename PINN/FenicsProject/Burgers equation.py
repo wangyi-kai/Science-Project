@@ -13,13 +13,12 @@ num_steps = 100
 dt = T / num_steps
 
 nx = 255
-pi = 3.14159
 nu = 0.01 / pi
 x_left = -1.0
-x_right = 1.0
+x_right = +1.0
 dis = (x_right - x_left) / nx
 mesh = IntervalMesh(nx, x_left, x_right)
-V = FunctionSpace(mesh, 'P', 1)
+V = FunctionSpace(mesh, 'CG', 2)
 
 #define the boundary conditions
 u_left = 0.0
@@ -34,66 +33,53 @@ bc_right = DirichletBC ( V, u_right, on_right )
 bc = [bc_left, bc_right]
 
 #define initial condition
-u_init = Expression("-1 * sin(pi * x[0])", degree=1, pi = pi)
-u_n = interpolate(u_init, V)
+u_init = Expression('-1 * sin(pi * x[0])', degree=1)
+u_n = project(u_init, V, bc)
+print(u_n.vector().get_local())
 
 u = Function(V)
 u_x = u.dx(0)
-f = Constant(0)
 v = TestFunction(V)
 v_x = v.dx(0)
 
 dx = Measure("dx")
 n = FacetNormal ( mesh )
-#F = dot(u - u_n, v) * dx + dt * inner(u * u_x, v) * dx + dt * nu * inner(grad(u), grad(v)) * dx
-F = \
-  ( \
-    dot ( u - u_n, v ) / dt \
-  + nu * inner ( grad ( u ), grad ( v ) ) \
-  + inner ( u * u.dx(0), v ) \
-  - dot ( f, v ) \
-  ) * dx
-
+F = u * v * dx - u_n * v * dx + dt * inner(u * u_x, v) * dx + dt * nu * inner(grad(u), grad(v)) * dx
+#F = (dot(u - u_n, v) / dt + nu * inner(grad( u ), grad( v )) + inner( u * u.dx(0), v)) * dx
 J = derivative(F, u)
 
 t = 0
 u_true = []
-u_d = []
 t_true = []
 x_true = []
+u_true.append(u_n.compute_vertex_values())
+t_true.append(t)
+for n in range(num_steps - 1):
 
-for n in range(num_steps):
-    # for i in range(nx + 1):
-    #     t_true.append(t)
-    t_true.append(t)
-
-    solve(F == 0, u, bc, J = J)
     t += dt
+    t_true.append(t)
+    solve(F == 0, u, bc, J = J)
+
     vertex_values_u = u.compute_vertex_values()
     u_true.append(vertex_values_u)
-    # for i in range(len(vertex_values_u)):
-    #     u_true.append(vertex_values_u[i])
+
     u_n.assign(u)
+
 x_mesh = x_left
 for i in range(nx + 1):
     x_true.append(x_mesh)
-    x_mesh = x_mesh + dis
+    x_mesh += dis
+scipy.io.savemat('Burgers.mat', {'t': t_true, 'x': x_true, 'usol': u_true})
+
 # fig = plt.figure()
 # ax = plt.axes(projection='3d')
-# ax.plot3D(t_true, x_true, u_true)
+# ax.plot_surface(t_true, x_true, u_true)
 # ax.set_xlabel('t')
 # ax.set_ylabel('x')
 # ax.set_zlabel('u')
 # ax.set_title('Burgers Equation')
 # plt.show()
-scipy.io.savemat('Burgers.mat', {'t' : t_true, 'x' : x_true, 'usol' : u_true})
-# print(t_true)
-# print(x_true)
-# print(u_true)
-# print(len(t_true))
-# print(len(x_true))
-# print(len(u_true))
-#np.savetxt('FenicsProject/generate_data.csv', u_true)
+
 
 
 

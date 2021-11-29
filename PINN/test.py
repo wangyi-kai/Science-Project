@@ -1,39 +1,20 @@
-import numpy as np
+from fenics import *
 import matplotlib.pyplot as plt
-import scipy.io
-import math
+import numpy as np
+import scipy.io as iso
+from mpl_toolkits import mplot3d
+from dolfin import *
 
-pi = 3.14159265
-N_f = 1000
-N_u = 200
-data = scipy.io.loadmat('burgers_shock.mat')
-t = data['t'].flatten()[:, None]
-x = data['x'].flatten()[:, None]
-Exact = np.real(data['usol'])
+num = 10
+mesh = IntervalMesh(num, -1, 1)
+V = FunctionSpace(mesh, 'P', 1)
+u_init = Expression("x[0] + 0.5", degree=1)
 
-X, T = np.meshgrid(x, t)
-X_star = np.hstack((X.flatten()[:,None], T.flatten()[:,None]))
-u_star = Exact.flatten()[:,None]
-
-lb = X_star.min(0)
-ub = X_star.max(0)
-
-xx1 = np.hstack((X[0:1, :].T, T[0:1, :].T))
-uu1 = Exact[0:1, :].T
-
-xx2 = np.hstack((X[:, 0:1], T[:, 0:1]))
-uu2 = Exact[:, 0:1]
-
-xx3 = np.hstack((X[:, -1:], T[:, -1:]))
-uu3 = Exact[:, -1:]
-print(x)
-X_u_train = np.vstack([xx1, xx2, xx3])
-#X_f_train = lb + (ub - lb) * lhs(2, N_f)
-#X_f_train = np.vstack((X_f_train, X_u_train))
-u_train = np.vstack([uu1, uu2, uu3])
-
-idx = np.random.choice(X_u_train.shape[0], N_u, replace=False)
-X_u_train = X_u_train[idx, :]
-u_train = u_train[idx, :]
+u_n = interpolate(u_init, V)
+u_value = u_n.vector().get_local()
+u_node = u_n.compute_vertex_values()
+print(u_n)
+print(u_value)
+print(u_node)
 
 

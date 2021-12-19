@@ -11,13 +11,26 @@ from scipy.interpolate import griddata
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.gridspec as gridspec
 import time
+import os
 
-np.random.seed(1234)
+def seed_torch(seed=1029):
+    #random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed) # if you are using multi-GPU.
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
+seed_torch()
+#np.random.seed(1234)
 # CUDA support
 if torch.cuda.is_available():
     device = torch.device('cuda')
 else:
     device = torch.device('cpu')
+
+#device = torch.device('cpu')
 
 class Net(nn.Module):
     def __init__(self, input, width, length):
@@ -187,6 +200,8 @@ if __name__ == "__main__":
     N_u = 200
     N_f = 4000
     layers = [2, 20, 20, 20, 20, 20, 20, 20, 20, 1]
+
+    print(device)
 
     data = scipy.io.loadmat('FenicsProject/Burgers.mat')
     #data = scipy.io.loadmat('burgers_shock.mat')

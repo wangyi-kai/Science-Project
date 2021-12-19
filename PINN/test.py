@@ -7,13 +7,13 @@ from dolfin import *
 
 num = 10
 mesh = IntervalMesh(num, -1, 1)
-V = FunctionSpace(mesh, 'P', 1)
+V = FunctionSpace(mesh, 'CG', 1)
 u_init = Expression("x[0] + 0.5", degree=1)
 
 u_n = interpolate(u_init, V)
 u_value = u_n.vector().get_local()
 u_node = u_n.compute_vertex_values()
-print(u_n)
+
 print(u_value)
 print(u_node)
 

@@ -36,6 +36,7 @@ bc = [bc_left, bc_right]
 u_init = Expression('-1 * sin(pi * x[0])', degree=1)
 u_n = project(u_init, V, bc)
 print(u_n.vector().get_local())
+print(u_n.compute_vertex_values())
 
 u = Function(V)
 u_x = u.dx(0)
